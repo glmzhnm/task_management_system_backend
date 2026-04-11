@@ -8,11 +8,9 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	// Публичные маршруты (не нужен токен)
 	r.POST("/register", controllers.Register)
 	r.POST("/login", controllers.Login)
 
-	// Защищенные маршруты (нужен токен)
 	protected := r.Group("/")
 	protected.Use(middlewares.AuthMiddleware())
 	{

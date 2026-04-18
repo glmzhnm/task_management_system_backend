@@ -1,21 +1,28 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"task-manager/controllers"
+	"task-manager/middlewares"
+
+	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(r *gin.Engine) {
 	r.POST("/register", controllers.Register)
 	r.POST("/login", controllers.Login)
-	r.POST("/tasks", controllers.CreateTask)
-	r.GET("/tasks", controllers.GetTasks)
-	r.GET("/tasks/:id", controllers.GetTaskByID)
-	r.PUT("/tasks/:id", controllers.UpdateTask)
-	r.PATCH("/tasks/:id/status", controllers.UpdateTaskStatus)
-	r.DELETE("/tasks/:id", controllers.DeleteTask)
-	r.GET("/tasks/status/:status", controllers.GetTasksByStatus)
-	r.GET("/tasks/priority/:priority", controllers.GetTasksByPriority)
-	r.GET("/tasks/search", controllers.SearchTasks)
-	r.DELETE("/tasks/completed", controllers.DeleteCompletedTasks)
+
+	protected := r.Group("/")
+	protected.Use(middlewares.AuthMiddleware())
+	{
+		protected.POST("/tasks", controllers.CreateTask)
+		protected.GET("/tasks", controllers.GetTasks)
+		protected.GET("/tasks/:id", controllers.GetTaskByID)
+		protected.PUT("/tasks/:id", controllers.UpdateTask)
+		protected.PATCH("/tasks/:id/status", controllers.UpdateTaskStatus)
+		protected.DELETE("/tasks/:id", controllers.DeleteTask)
+		protected.GET("/tasks/status/:status", controllers.GetTasksByStatus)
+		protected.GET("/tasks/priority/:priority", controllers.GetTasksByPriority)
+		protected.GET("/tasks/search", controllers.SearchTasks)
+		protected.DELETE("/tasks/completed", controllers.DeleteCompletedTasks)
+	}
 }

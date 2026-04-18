@@ -6,6 +6,8 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
+	r.POST("/register", controllers.Register)
+	r.POST("/login", controllers.Login)
 	r.POST("/tasks", controllers.CreateTask)
 	r.GET("/tasks", controllers.GetTasks)
 	r.GET("/tasks/:id", controllers.GetTaskByID)

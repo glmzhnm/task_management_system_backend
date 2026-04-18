@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 	"log"
-	"task-manager/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -17,9 +16,8 @@ func ConnectDB() {
 
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to database: ", err)
+		log.Fatal(err)
 	}
 
-	DB.AutoMigrate(&models.Task{})
-	fmt.Println("Database connected and migrated successfully!")
+	fmt.Println("Database connected successfully!")
 }

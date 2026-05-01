@@ -5,10 +5,13 @@ import (
 	"github.com/joho/godotenv"
 	"log"
 	"task-manager/database"
+	"task-manager/models"
 	"task-manager/routes"
 )
 
 func main() {
+	database.ConnectDB()
+	database.DB.AutoMigrate(&models.User{}, &models.Task{})
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using default environment variables")
 	}

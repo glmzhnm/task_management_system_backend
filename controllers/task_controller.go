@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/go-resty/resty/v2"
 	"net/http"
 	"task-manager/database"
 	"task-manager/models"
-
-	"github.com/gin-gonic/gin"
 )
 
 func CreateTask(c *gin.Context) {
@@ -16,6 +16,18 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 	database.DB.Create(&task)
+	client := resty.New()
+	message := fmt.Sprintf(`{"message": "New task was created: %s"}`, task.Title)
+	resp, err := client.R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(message).
+		Post("http://notifier:8081/notify")
+
+	if err != nil {
+		fmt.Printf("Error sending notification: %v\n", err)
+	} else {
+		fmt.Printf("Response from the notification service: %s\n", resp.String())
+	}
 	c.JSON(http.StatusCreated, task)
 }
 

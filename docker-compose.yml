@@ -1,0 +1,37 @@
+services:
+  # Database service
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: taskdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Notifier microservice
+  notifier:
+    image: golang:1.25-alpine
+    working_dir: /app
+    volumes:
+      - ./notifier:/app
+    command: go run main.go
+    ports:
+      - "8081:8081"
+
+  # Main task manager service
+  task-manager:
+    build: .
+    ports:
+      - "8082:8080" # <-- PORT CHANGED HERE
+    environment:
+      # Note: using 'db' instead of 'localhost' to connect inside Docker network
+      - DB_URL=postgres://postgres:postgres@db:5432/taskdb?sslmode=disable
+    depends_on:
+      - db
+      - notifier
+
+volumes:
+  postgres_data:

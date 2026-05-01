@@ -1,4 +1,26 @@
+# Скомпилированные файлы
+task-manager-app
+notifier-app
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Папки зависимостей и инструментов
+bin/
+obj/
+vendor/
+
+# Переменные окружения (секреты)
 .env
-taskapp
-task-manager
+
+# Файлы IDE
 .idea/
+.vscode/
+
+# Docker данные (если вдруг они создались локально)
+postgres_data/
+
+# Логи
+*.log

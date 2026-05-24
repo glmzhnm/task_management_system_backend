@@ -1,0 +1,36 @@
+.PHONY: run build test migrate docker-up docker-down clean
+
+run:
+	go run main.go
+
+build:
+	go build -o task-manager-app .
+
+test:
+	go test ./tests/... -v -count=1
+
+test-coverage:
+	go test ./tests/... -cover -coverprofile=coverage.out
+	go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report: coverage.html"
+
+tidy:
+	go mod tidy
+
+docker-up:
+	docker-compose up --build -d
+
+docker-down:
+	docker-compose down -v
+
+docker-logs:
+	docker-compose logs -f
+
+migrate-up:
+	migrate -path ./migrations -database "$$DB_URL" up
+
+migrate-down:
+	migrate -path ./migrations -database "$$DB_URL" down
+
+clean:
+	rm -f task-manager-app coverage.out coverage.html

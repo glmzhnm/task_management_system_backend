@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: taskmanager-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: task_manager
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  notifier:
+    build:
+      context: ./notifier
+      dockerfile: Dockerfile
+    container_name: taskmanager-notifier
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+  task-manager:
+    build: .
+    container_name: taskmanager-api
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_URL=postgres://postgres:postgres@db:5432/task_manager?sslmode=disable
+      - JWT_SECRET=W0yczsYuE5gRwhrvu9JduzxpkrElakEX/VJAJtfUZt0=
+      - PORT=8080
+      - GIN_MODE=release
+    depends_on:
+      db:
+        condition: service_healthy
+      notifier:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

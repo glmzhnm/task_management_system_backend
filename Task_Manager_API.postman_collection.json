@@ -1,0 +1,192 @@
+{
+  "info": {
+    "name": "Task Manager API",
+    "description": "Complete Task Manager REST API collection — 20 endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "task-manager-v1"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "token",   "value": "",                     "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "1. Register",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\",\n  \"email\": \"test@example.com\"\n}" }
+          }
+        },
+        {
+          "name": "2. Login",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": ["if (pm.response.code === 200) { pm.collectionVariables.set('token', pm.response.json().token); }"] }
+          }],
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}" }
+          }
+        },
+        {
+          "name": "3. Get Profile",
+          "request": {
+            "method": "GET", "url": "{{baseUrl}}/profile",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "4. Change Password",
+          "request": {
+            "method": "PATCH", "url": "{{baseUrl}}/profile/password",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json"  }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"old_password\": \"password123\",\n  \"new_password\": \"newpassword456\"\n}" }
+          }
+        },
+        {
+          "name": "5. Health Check",
+          "request": { "method": "GET", "url": "{{baseUrl}}/health" }
+        }
+      ]
+    },
+    {
+      "name": "📋 Tasks",
+      "item": [
+        {
+          "name": "6. Create Task",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/tasks",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json"  }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"My First Task\",\n  \"description\": \"This is a sample task\",\n  \"priority\": 3,\n  \"status\": \"pending\"\n}" }
+          }
+        },
+        {
+          "name": "7. Get All Tasks",
+          "request": {
+            "method": "GET", "url": "{{baseUrl}}/tasks",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "8. Get Task by ID",
+          "request": {
+            "method": "GET", "url": "{{baseUrl}}/tasks/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "9. Update Task (Full)",
+          "request": {
+            "method": "PUT", "url": "{{baseUrl}}/tasks/1",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json"  }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Updated Task Title\",\n  \"description\": \"Updated description\",\n  \"priority\": 4,\n  \"status\": \"in_progress\"\n}" }
+          }
+        },
+        {
+          "name": "10. Update Task Status",
+          "request": {
+            "method": "PATCH", "url": "{{baseUrl}}/tasks/1/status",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json"  }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"in_progress\"\n}" }
+          }
+        },
+        {
+          "name": "11. Delete Task",
+          "request": {
+            "method": "DELETE", "url": "{{baseUrl}}/tasks/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "12. Get Tasks by Status — pending",
+          "request": {
+            "method": "GET", "url": "{{baseUrl}}/tasks/status/pending",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "13. Get Tasks by Status — in_progress",
+          "request": {
+            "method": "GET", "url": "{{baseUrl}}/tasks/status/in_progress",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "14. Get Tasks by Status — completed",
+          "request": {
+            "method": "GET", "url": "{{baseUrl}}/tasks/status/completed",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "15. Get Tasks by Priority — 1 (Low)",
+          "request": {
+            "method": "GET", "url": "{{baseUrl}}/tasks/priority/1",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "16. Get Tasks by Priority — 5 (Critical)",
+          "request": {
+            "method": "GET", "url": "{{baseUrl}}/tasks/priority/5",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "17. Search Tasks",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/tasks/search?q=task",
+              "host": ["{{baseUrl}}"], "path": ["tasks","search"],
+              "query": [{ "key": "q", "value": "task" }]
+            },
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "18. Get Task Stats",
+          "request": {
+            "method": "GET", "url": "{{baseUrl}}/tasks/stats",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "19. Delete Completed Tasks",
+          "request": {
+            "method": "DELETE", "url": "{{baseUrl}}/tasks/completed",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }]
+          }
+        },
+        {
+          "name": "20. Create High Priority Task",
+          "request": {
+            "method": "POST", "url": "{{baseUrl}}/tasks",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type",  "value": "application/json"  }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"URGENT: Fix production bug\",\n  \"description\": \"Critical issue in production environment\",\n  \"priority\": 5,\n  \"status\": \"in_progress\"\n}" }
+          }
+        }
+      ]
+    }
+  ]
+}
